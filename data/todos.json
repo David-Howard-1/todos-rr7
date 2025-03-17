@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "title": "Sweep kitchen",
+    "notes": "Use the small broom to get into the corners",
+    "is_important": true,
+    "is_complete": false
+  },
+  {
+    "id": "2",
+    "title": "Pet Mia",
+    "notes": "She likes to be pet on top of her head!",
+    "is_important": true,
+    "is_complete": true
+  },
+  {
+    "id": "3",
+    "title": "Change Windshield Wipers on Civic",
+    "notes": "Be sure to look up a youtube video",
+    "is_important": false,
+    "is_complete": false
+  }
+]
