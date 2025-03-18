@@ -1,54 +1,66 @@
 import { randomUUID } from 'crypto';
-import todos from './todos.json';
+import db from './todos.json';
 
-type Todo = {
+type DataResponse<T> = {
+  data: T;
+  message: string;
+};
+
+export type Todo = {
   id: string;
   title: string;
   notes: string;
-  is_important: boolean;
+  importance: number;
   is_complete: boolean;
 };
 
-let data: Todo[] = todos;
+let todos: Todo[] = db;
 
-export function getTodos(): Promise<Todo[]> {
-  return Promise.resolve(data);
+export function getTodos(): Promise<DataResponse<Todo[]>> {
+  return Promise.resolve({ data: todos, message: 'Todos retrieved' });
 }
 
 // Function to get a single todo by ID
-export function getTodoById(id: string): Promise<Todo | undefined> {
-  return Promise.resolve(data.find((todo) => todo.id === id));
+export function getTodoById(
+  id: string
+): Promise<DataResponse<Todo | undefined>> {
+  return Promise.resolve({
+    data: todos.find((todo) => todo.id === id),
+    message: 'Todo retrieved',
+  });
 }
 
 type AddTodoInput = {
   title: string;
   notes: string;
-  is_important: boolean;
+  importance: number;
 };
 export function addTodo({
   title,
-  is_important,
+  importance,
   notes,
-}: AddTodoInput): Promise<string> {
+}: AddTodoInput): Promise<DataResponse<Todo>> {
   const id = randomUUID();
   const todo: Todo = {
     id,
     title,
     notes,
-    is_important,
+    importance,
     is_complete: false,
   };
-  data.push(todo);
-  return Promise.resolve('Todo added');
+  todos.push(todo);
+  return Promise.resolve({ data: todo, message: 'Todo added' });
 }
 
 type DeleteTodoInput = {
   id: string;
 };
-export function deleteTodo({ id }: DeleteTodoInput): Promise<string> {
-  data.filter((todo) => todo.id !== id);
+export function deleteTodo({
+  id,
+}: DeleteTodoInput): Promise<DataResponse<string>> {
+  todos.filter((todo) => todo.id !== id);
 
-  return Promise.resolve('Todo deleted.');
+  return Promise.resolve({ data: id, message: 'Todo deleted' });
 }
 
 type UpdateTodoInput = {
@@ -58,9 +70,11 @@ type UpdateTodoInput = {
 export function updateTodo({
   id,
   updates,
-}: UpdateTodoInput): Promise<Todo | undefined> {
-  data = data.map((todo) => (todo.id === id ? { ...todo, ...updates } : todo));
+}: UpdateTodoInput): Promise<DataResponse<Todo | undefined>> {
+  todos = todos.map((todo) =>
+    todo.id === id ? { ...todo, ...updates } : todo
+  );
 
-  const updatedTodo = data.find((todo) => todo.id === id);
-  return Promise.resolve(updatedTodo);
+  const updatedTodo = todos.find((todo) => todo.id === id);
+  return Promise.resolve({ data: updatedTodo, message: 'Todo updated' });
 }
