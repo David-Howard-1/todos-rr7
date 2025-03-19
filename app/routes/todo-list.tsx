@@ -1,9 +1,19 @@
-import { type Todo } from 'data/api';
+import { getTodos, type Todo } from 'data/api';
 import { Check, Pencil } from 'lucide-react';
 import Button from '~/components/Button';
 import Card from '~/components/Card';
+import type { Route } from '../+types/root';
+import { Link, useNavigate } from 'react-router';
+import TextInput from '~/components/TextInput';
 
-export default function TodoList({ todos }: { todos: Todo[] }) {
+export async function loader() {
+  return await getTodos();
+}
+
+export default function TodoList({ loaderData }: Route.ComponentProps) {
+  const todos = loaderData.data;
+  const navigate = useNavigate();
+
   const todosSorted = todos.sort(
     (a, b) => Number(a.is_complete) - Number(b.is_complete)
   );
@@ -14,19 +24,30 @@ export default function TodoList({ todos }: { todos: Todo[] }) {
         {todo.title}
       </p>
       <div className="flex items-center gap-1">
-        <Button className="text-sky-600 bg-transparent">
+        <Button
+          onClick={() => navigate(`todos/${todo.id}`)}
+          className="text-sky-600 bg-transparent"
+        >
           <Pencil size={15} />
         </Button>
-        <Button className="border border-gray-400 bg-transparent p-0 h-8 w-8">
-          {todo.is_complete ? <Check size={18} className="text-green-600" /> : null}
+        <Button className="border-2 border-gray-400 bg-transparent p-0 h-8 w-8 hover:border-sky-400">
+          {todo.is_complete ? (
+            <Check size={18} className="text-green-600" />
+          ) : null}
         </Button>
       </div>
     </li>
   ));
 
   return (
-    <Card>
-      <ul className="divide-y">{listItems}</ul>
+    <Card className="">
+      <div className="flex items-center justify-between">
+        <TextInput inputProps={{ placeholder: 'Search todos...' }} />
+        <Button className="ml-auto" onClick={() => navigate('todos/new')}>
+          Add Todo
+        </Button>
+      </div>
+      <ul className="divide-y text-sm p-1">{listItems}</ul>
     </Card>
   );
 }
